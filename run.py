@@ -19,6 +19,7 @@ def main():
 	s = problem.State()
 	inputVar(s)
 	inputRules(s)
+	s.inputConstraints()
 	s.inputHeuristic()
 	
 	print("\nDictionary: "+str(s.dt))
@@ -26,6 +27,7 @@ def main():
 	print("Rules: "+str(s.rules))
 	print("Rule Conditions: "+str(s.rule_conditions))
 	print("Rule costs: "+str(s.rule_cost))
+	print("Constraints: "+str(s.constraints))
 	print("Heuristic function: "+str(s.heuristic))
 	
 	s.inputStartState()

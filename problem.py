@@ -8,6 +8,7 @@ class State:
 		self.rules = []
 		self.rule_conditions = []
 		self.rule_cost = []
+		self.constraints = []
 		self.heuristic = ""
 		self.goal = {}
 
@@ -56,7 +57,7 @@ class State:
 			type[2] = list_properties[1]
 			domain = list_properties[2]
 
-		self.dt[name] = {'type':type, 'val':0, 'domain': domain, 'constraints': []}
+		self.dt[name] = {'type':type, 'val':0, 'domain': domain}
 		self.variables.append(name)
 
 
@@ -88,6 +89,13 @@ class State:
 		self.rules.append(temp_rule)
 		self.inputRuleConditions()
 		self.inputRuleCost()
+
+	def inputConstraints(self):
+		num_constraints = int(input("Enter number of constraints: "))
+		for i in range(num_constraints):
+			temp_constraint = input("Enter constraint "+str(i+1)+": ")
+			temp_constraint = temp_constraint.replace("dt[", "self.dt[")
+			self.constraints.append(temp_constraint)
 		
 
 	def inputIntegerValue(self, variable_name):
@@ -161,6 +169,12 @@ class State:
 					return False
 		return True
 
+	def constraintCheck(self):
+		for i in range (len(self.constraints)):
+			if not eval(self.constraints[i]):
+				return False
+		return True
+
 
 	def executeRule(self, r, parent):
 		for i in range(len(self.rule_conditions[r])):
@@ -168,5 +182,5 @@ class State:
 				return False
 		for i in range(len(self.rules[r])):
 			self.dt[self.rules[r][i][0]]['val'] = eval(self.rules[r][i][1])
-		return self.domainCheck()
+		return self.domainCheck() and self.constraintCheck()
 
