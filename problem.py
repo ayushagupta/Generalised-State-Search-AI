@@ -1,8 +1,15 @@
+import math
+from copy import deepcopy
+
 class State:
 	def __init__(self):
-		self.d = {}
+		self.dt = {}
 		self.variables = []
 		self.rules = []
+		self.rule_conditions = []
+		self.rule_cost = []
+		self.heuristic = ""
+		self.goal = {}
 
 	def input_variable_int(self):
 		lower_bound = int(input("Enter lower bound of the integer variable: "))
@@ -49,21 +56,38 @@ class State:
 			type[2] = list_properties[1]
 			domain = list_properties[2]
 
-		self.d[name] = {'type':type, 'val':0, 'domain': domain, 'constraints': []}
+		self.dt[name] = {'type':type, 'val':0, 'domain': domain, 'constraints': []}
 		self.variables.append(name)
+
+
+	def inputRuleConditions(self):
+		num_cond = int(input("Enter number of conditions to be fulfilled for this rule: "))
+		temp_cond = []
+		for i in range (num_cond):
+			exp = input("Enter condition: ")
+			exp = exp.replace("dt[", "self.dt[")
+			temp_cond.append(exp)
+		self.rule_conditions.append(temp_cond)
+
+	def inputRuleCost(self):
+		temp_cost = float(input("Enter cost of using this rule: "))
+		self.rule_cost.append(temp_cost)
 
 
 	def inputTransitionRules(self):
 		print("Rules are input in the form: a = F(x1,x2,x3,...)")
-		print("Example for using variable with name a in F: d['a']['val']")
+		print("Example for using variable with name a in F: dt['a']['val']")
 		num_steps = int(input("Enter number of steps in the rule: "))
 		temp_rule = []
 		for i in range (num_steps):
 			print("**Step "+str(i+1)+"**")
 			lhs = input("Enter variable a: ")
 			exp = input("Enter expression F: ")
+			exp = exp.replace("dt[", "parent.dt[")
 			temp_rule.append((lhs, exp))
 		self.rules.append(temp_rule)
+		self.inputRuleConditions()
+		self.inputRuleCost()
 		
 
 	def inputIntegerValue(self, variable_name):
@@ -72,23 +96,81 @@ class State:
 	def inputFloatValue(self, variable_name):
 		return float(input("Enter float value of "+variable_name+": "))
 
-	def inputStateValues(self):
+	def inputStateValues(self,dt):
 		for i in range (len(self.variables)):
-			if self.d[self.variables[i]]['type'][0] == 1:
-				self.d[self.variables[i]]['val'] = self.inputIntegerValue(self.variables[i])
-			elif self.d[self.variables[i]]['type'][0] == 2:
-				self.d[self.variables[i]]['val'] = self.inputFloatValue(self.variables[i])
+			if dt[self.variables[i]]['type'][0] == 1:
+				dt[self.variables[i]]['val'] = self.inputIntegerValue(self.variables[i])
+			elif dt[self.variables[i]]['type'][0] == 2:
+				dt[self.variables[i]]['val'] = self.inputFloatValue(self.variables[i])
 			else:
-				for j in range (self.d[variables[i]]['type'][2]):
-					if self.d[self.variables[i]]['type'][1] == 1: 
-						self.d[self.variables[i]]['val'][j] = self.inputIntegerValue(self.variables[i])
-					elif self.d[self.variables[i]]['type'][1] == 2:
-						self.d[self.variables[i]]['val'][j] = self.inputFloatValue(self.variables[i])
+				for j in range (dt[variables[i]]['type'][2]):
+					if dt[self.variables[i]]['type'][1] == 1: 
+						dt[self.variables[i]]['val'][j] = self.inputIntegerValue(self.variables[i])
+					elif dt[self.variables[i]]['type'][1] == 2:
+						dt[self.variables[i]]['val'][j] = self.inputFloatValue(self.variables[i])
 
 	def inputStartState(self):
 		print("\nEnter initial values of the state variables:")
-		self.inputStateValues()
+		self.inputStateValues(self.dt)
 
 	def inputGoalState(self):
+		self.goal = deepcopy(self.dt)
 		print("\nEnter final values of the state variables:")
-		self.inputStateValues()
+		self.inputStateValues(self.goal)
+
+	def checkGoalState(self):
+		for i in range (len(self.variables)):
+			if self.dt[self.variables[i]]['type'][0] == 1:
+				if self.dt[self.variables[i]]['val'] != self.goal[self.variables[i]]['val']:
+					return False
+			
+			elif self.dt[self.variables[i]]['type'][0] == 2:
+				if not math.isclose(self.dt[self.variables[i]]['val'], self.goal[self.variables[i]]['val'], abs_tol=0.000001):
+					return False
+
+			else:
+				for j in range (self.dt[self.variables[i]]['type'][2]):
+					if self.dt[self.variables[i]]['type'][1] == 1:
+						if self.dt[self.variables[i]]['val'][j] != self.goal[self.variables[i]]['val'][j]:
+							return False
+
+					elif self.dt[self.variables[i]]['type'][1] == 2:
+						if not math.isclose(self.dt[self.variables[i]]['val'][j], self.goal[self.variables[i]]['val'][j], abs_tol=0.000001):
+							return False
+
+		return True
+
+	def inputHeuristic(self):
+		h = input("\nEnter heuristic function in terms of current and goal variables: ")
+		h = h.replace("goal[", "self.goal[")
+		h = h.replace("dt[", "self.dt[")
+		self.heuristic = h
+
+	def evaluateHeuristic(self):
+		return eval(self.heuristic)
+
+	def domainCheck(self):
+		for i in range(len(self.variables)):
+			if i == 3:
+				for j in range(self.dt[self.variables[i]]['type'][2]):
+					if self.dt[self.variables[i]]['val'][j]>self.dt[self.variables[i]]['domain'][1] or self.dt[self.variables[i]]['val'][j]<self.dt[self.variables[i]]['domain'][0]:
+						return False
+
+			else:
+				if self.dt[self.variables[i]]['val']>self.dt[self.variables[i]]['domain'][1] or self.dt[self.variables[i]]['val']<self.dt[self.variables[i]]['domain'][0]:
+					return False
+
+
+	def executeRule(self, r, parent):
+		for i in range(len(self.rule_conditions[r])):
+			if not eval(self.rule_conditions[r][i]):
+				return False
+
+		for i in range(len(rules[r])):
+			self.dt[rules[r][0]]['val'] = eval(self.rules[r][1])
+		
+		if not self.domainCheck():
+			return False
+
+		return True
+

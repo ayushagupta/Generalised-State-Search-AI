@@ -1,4 +1,5 @@
 import problem
+import search
 from copy import deepcopy
 
 def inputVar(s):
@@ -18,16 +19,21 @@ def main():
 	s = problem.State()
 	inputVar(s)
 	inputRules(s)
-	print(s.d)
-	print(s.variables)
-	print(s.rules)
-	s.inputStartState()
+	s.inputHeuristic()
 	
-	g = deepcopy(s)
-	g.inputGoalState()
+	print("\nDictionary: "+str(s.dt))
+	print("Variables: "+str(s.variables))
+	print("Rules: "+str(s.rules))
+	print("Rule Conditions: "+str(s.rule_conditions))
+	print("Rule costs: "+str(s.rule_cost))
+	print("Heuristic function: "+str(s.heuristic))
+	
+	s.inputStartState()
+	s.inputGoalState()
 
-	print(s.d)
-	print(g.d)
+	print("\nStart: "+str(s.dt))
+	print("Goal: "+str(s.goal))
+	print("Goal reached: "+str(s.checkGoalState()))
 
 if __name__=="__main__":
 	main()
