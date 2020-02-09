@@ -159,18 +159,14 @@ class State:
 			else:
 				if self.dt[self.variables[i]]['val']>self.dt[self.variables[i]]['domain'][1] or self.dt[self.variables[i]]['val']<self.dt[self.variables[i]]['domain'][0]:
 					return False
+		return True
 
 
 	def executeRule(self, r, parent):
 		for i in range(len(self.rule_conditions[r])):
 			if not eval(self.rule_conditions[r][i]):
 				return False
-
-		for i in range(len(rules[r])):
-			self.dt[rules[r][0]]['val'] = eval(self.rules[r][1])
-		
-		if not self.domainCheck():
-			return False
-
-		return True
+		for i in range(len(self.rules[r])):
+			self.dt[self.rules[r][i][0]]['val'] = eval(self.rules[r][i][1])
+		return self.domainCheck()
 

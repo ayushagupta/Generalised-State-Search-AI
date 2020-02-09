@@ -33,7 +33,10 @@ def main():
 
 	print("\nStart: "+str(s.dt))
 	print("Goal: "+str(s.goal))
-	print("Goal reached: "+str(s.checkGoalState()))
+	print()
+
+	f = search.Search(s)
+	print(f.aSearch())
 
 if __name__=="__main__":
 	main()
