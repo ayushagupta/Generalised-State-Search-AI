@@ -47,17 +47,25 @@ class State:
 		type = [int(input("Enter data type: ")), 0, 0]
 		if type[0] == 1:
 			domain = self.input_variable_int()
+			val = 0
 			
 		elif type[0] == 2:
 			domain = self.input_variable_float()
+			val = 0.0
 
 		else:
 			list_properties = self.input_variable_list()
 			type[1] = list_properties[0]
 			type[2] = list_properties[1]
 			domain = list_properties[2]
+			val = []
+			for i in range (type[2]):
+				if type[1] == 1:
+					val.append(0)
+				else:
+					val.append(0.0)
 
-		self.dt[name] = {'type':type, 'val':0, 'domain': domain}
+		self.dt[name] = {'type':type, 'val':val, 'domain': domain}
 		self.variables.append(name)
 
 
@@ -104,18 +112,18 @@ class State:
 	def inputFloatValue(self, variable_name):
 		return float(input("Enter float value of "+variable_name+": "))
 
-	def inputStateValues(self,dt):
+	def inputStateValues(self,dit):
 		for i in range (len(self.variables)):
-			if dt[self.variables[i]]['type'][0] == 1:
-				dt[self.variables[i]]['val'] = self.inputIntegerValue(self.variables[i])
-			elif dt[self.variables[i]]['type'][0] == 2:
-				dt[self.variables[i]]['val'] = self.inputFloatValue(self.variables[i])
+			if dit[self.variables[i]]['type'][0] == 1:
+				dit[self.variables[i]]['val'] = self.inputIntegerValue(self.variables[i])
+			elif dit[self.variables[i]]['type'][0] == 2:
+				dit[self.variables[i]]['val'] = self.inputFloatValue(self.variables[i])
 			else:
-				for j in range (dt[variables[i]]['type'][2]):
-					if dt[self.variables[i]]['type'][1] == 1: 
-						dt[self.variables[i]]['val'][j] = self.inputIntegerValue(self.variables[i])
-					elif dt[self.variables[i]]['type'][1] == 2:
-						dt[self.variables[i]]['val'][j] = self.inputFloatValue(self.variables[i])
+				for j in range (dit[self.variables[i]]['type'][2]):
+					if dit[self.variables[i]]['type'][1] == 1: 
+						dit[self.variables[i]]['val'][j] = self.inputIntegerValue(self.variables[i])
+					elif dit[self.variables[i]]['type'][1] == 2:
+						dit[self.variables[i]]['val'][j] = self.inputFloatValue(self.variables[i])
 
 	def inputStartState(self):
 		print("\nEnter initial values of the state variables:")
@@ -159,7 +167,7 @@ class State:
 
 	def domainCheck(self):
 		for i in range(len(self.variables)):
-			if i == 3:
+			if self.dt[self.variables[i]]['type'][0] == 3:
 				for j in range(self.dt[self.variables[i]]['type'][2]):
 					if self.dt[self.variables[i]]['val'][j]>self.dt[self.variables[i]]['domain'][1] or self.dt[self.variables[i]]['val'][j]<self.dt[self.variables[i]]['domain'][0]:
 						return False

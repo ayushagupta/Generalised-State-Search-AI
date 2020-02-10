@@ -11,7 +11,7 @@ class Node:
 			self.moves = str(move)
 			self.cost = 0
 		else:
-			self.moves = parent.moves + str(move)
+			self.moves = parent.moves + " " + str(move)
 			self.cost = self.parent.cost + self.state.rule_cost[move]
 
 	def goalState(self):
@@ -32,5 +32,5 @@ class Node:
 		return children
 
 	def __str__(self):
-		return "Moves: "+str(self.moves)
+		return "Moves list: "+str(self.moves)
 
