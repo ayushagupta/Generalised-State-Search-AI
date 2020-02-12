@@ -96,7 +96,8 @@ class State:
 			else:
 				ele = -1
 			exp = input("Enter expression F: ")
-			exp = exp.replace("dt[", "parent.dt[")
+			exp = exp.replace("['", "parent.dt['")
+			exp = exp.replace("']", "']['val']")
 			temp_rule.append((lhs, ele, exp))
 		self.rules.append(temp_rule)
 		self.inputRuleConditions()
@@ -106,7 +107,8 @@ class State:
 		num_constraints = int(input("\nEnter number of constraints: "))
 		for i in range(num_constraints):
 			temp_constraint = input("Enter constraint "+str(i+1)+": ")
-			temp_constraint = temp_constraint.replace("dt[", "self.dt[")
+			temp_constraint = temp_constraint.replace("['", "self.dt['")
+			temp_constraint = temp_constraint.replace("']", "']['val']")
 			self.constraints.append(temp_constraint)
 		
 
@@ -161,9 +163,12 @@ class State:
 		return True
 
 	def inputHeuristic(self):
-		h = input("\nEnter heuristic function in terms of current and goal variables: ")
-		h = h.replace("goal[", "self.goal[")
-		h = h.replace("dt[", "self.dt[")
+		print("\nEnter heuristic function in terms of current and goal variables")
+		h = input("Use {} for goal variables and [] for current variables:")
+		h = h.replace("['", "self.dt['")
+		h = h.replace("{'", "self.goal['")
+		h = h.replace("'}", "']")
+		h = h.replace("']", "']['val']")
 		self.heuristic = h
 
 	def evaluateHeuristic(self):
