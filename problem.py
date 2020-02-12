@@ -91,15 +91,19 @@ class State:
 		for i in range (num_steps):
 			print("**Step "+str(i+1)+"**")
 			lhs = input("Enter variable a: ")
+			if self.dt[lhs]['type'][0] == 3:
+				ele = int(input("Enter element of the list: "))
+			else:
+				ele = -1
 			exp = input("Enter expression F: ")
 			exp = exp.replace("dt[", "parent.dt[")
-			temp_rule.append((lhs, exp))
+			temp_rule.append((lhs, ele, exp))
 		self.rules.append(temp_rule)
 		self.inputRuleConditions()
 		self.inputRuleCost()
 
 	def inputConstraints(self):
-		num_constraints = int(input("Enter number of constraints: "))
+		num_constraints = int(input("\nEnter number of constraints: "))
 		for i in range(num_constraints):
 			temp_constraint = input("Enter constraint "+str(i+1)+": ")
 			temp_constraint = temp_constraint.replace("dt[", "self.dt[")
@@ -189,6 +193,9 @@ class State:
 			if not eval(self.rule_conditions[r][i]):
 				return False
 		for i in range(len(self.rules[r])):
-			self.dt[self.rules[r][i][0]]['val'] = eval(self.rules[r][i][1])
+			if self.rules[r][i][1] == -1:
+				self.dt[self.rules[r][i][0]]['val'] = eval(self.rules[r][i][2])
+			else:
+				self.dt[self.rules[r][i][0]]['val'][self.rules[r][i][1]] = eval(self.rules[r][i][2])
 		return self.domainCheck() and self.constraintCheck()
 

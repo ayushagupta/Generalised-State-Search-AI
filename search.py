@@ -22,6 +22,7 @@ class Search:
 			print("Current Cost: " + str(current.cost))
 			if current.goalState():
 				print("\nGoal reahced with cost: "+str(current.cost))
+				print("Number of nodes explored: "+str(node_count))
 				return current
 			elif current.state.dt not in closed_list:
 				closed_list.append(current.state.dt)
