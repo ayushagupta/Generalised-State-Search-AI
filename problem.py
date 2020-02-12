@@ -11,6 +11,7 @@ class State:
 		self.constraints = []
 		self.heuristic = ""
 		self.goal = {}
+		self.forbidden = []
 
 	def input_variable_int(self):
 		lower_bound = int(input("Enter lower bound of the integer variable: "))
@@ -140,6 +141,11 @@ class State:
 		print("\nEnter final values of the state variables:")
 		self.inputStateValues(self.goal)
 
+	def inputForbiddenState(self):
+			temp_dt = deepcopy(self.dt)
+			self.inputStateValues(temp_dt)
+			self.forbidden.append(temp_dt)
+
 	def checkGoalState(self):
 		for i in range (len(self.variables)):
 			if self.dt[self.variables[i]]['type'][0] == 1:
@@ -164,7 +170,7 @@ class State:
 
 	def inputHeuristic(self):
 		print("\nEnter heuristic function in terms of current and goal variables")
-		h = input("Use {} for goal variables and [] for current variables:")
+		h = input("Use {} for goal variables and [] for current variables: ")
 		h = h.replace("['", "self.dt['")
 		h = h.replace("{'", "self.goal['")
 		h = h.replace("'}", "']")
@@ -192,6 +198,11 @@ class State:
 				return False
 		return True
 
+	def forbiddenCheck(self):
+		if self.dt in self.forbidden:
+			return False
+		return True
+
 
 	def executeRule(self, r, parent):
 		for i in range(len(self.rule_conditions[r])):
@@ -202,5 +213,5 @@ class State:
 				self.dt[self.rules[r][i][0]]['val'] = eval(self.rules[r][i][2])
 			else:
 				self.dt[self.rules[r][i][0]]['val'][self.rules[r][i][1]] = eval(self.rules[r][i][2])
-		return self.domainCheck() and self.constraintCheck()
+		return self.domainCheck() and self.constraintCheck() and self.forbiddenCheck()
 

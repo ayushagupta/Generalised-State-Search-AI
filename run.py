@@ -14,11 +14,18 @@ def inputRules(s):
 		print("\n****Rule "+str(i+1)+"****")
 		s.inputTransitionRules()
 
+def inputForbidden(s):
+	num_forbidden = int(input("\nEnter number of forbidden states: "))
+	for i in range(num_forbidden):
+		print("\n***Forbidden state "+str(i+1)+"***")
+		s.inputForbiddenState()
+
 
 def main():
 	s = problem.State()
 	inputVar(s)
 	inputRules(s)
+	inputForbidden(s)
 	s.inputConstraints()
 	s.inputHeuristic()
 	
@@ -27,6 +34,7 @@ def main():
 	print("Rules: "+str(s.rules))
 	print("Rule Conditions: "+str(s.rule_conditions))
 	print("Rule costs: "+str(s.rule_cost))
+	print("Forbidden States: "+str(s.forbidden))
 	print("Constraints: "+str(s.constraints))
 	print("Heuristic function: "+str(s.heuristic))
 	
