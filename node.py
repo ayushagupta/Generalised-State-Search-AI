@@ -12,7 +12,7 @@ class Node:
 			self.cost = 0
 		else:
 			self.moves = parent.moves + " " + str(move)
-			self.cost = self.parent.cost + self.state.rule_cost[move]
+			self.cost = self.parent.cost + self.state.evaluateRuleCost(move, parent.state)
 
 	def goalState(self):
 		return self.state.checkGoalState()

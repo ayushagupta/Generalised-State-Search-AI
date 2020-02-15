@@ -75,28 +75,31 @@ class State:
 		temp_cond = []
 		for i in range (num_cond):
 			exp = input("Enter condition: ")
-			exp = exp.replace("dt[", "self.dt[")
+			exp = exp.replace("['", "self.dt['")
+			exp = exp.replace("']", "']['val']")
 			temp_cond.append(exp)
 		self.rule_conditions.append(temp_cond)
 
 	def inputRuleCost(self):
-		temp_cost = float(input("Enter cost of using this rule: "))
+		temp_cost = input("Enter cost of using this rule: ")
+		temp_cost = temp_cost.replace("['", "parent.dt['")
+		temp_cost = temp_cost.replace("']", "']['val']")
 		self.rule_cost.append(temp_cost)
 
 
 	def inputTransitionRules(self):
 		print("Rules are input in the form: a = F(x1,x2,x3,...)")
-		print("Example for using variable with name a in F: dt['a']['val']")
+		print("Example for using variable with name a in F: ['a']")
 		num_steps = int(input("Enter number of steps in the rule: "))
 		temp_rule = []
 		for i in range (num_steps):
 			print("**Step "+str(i+1)+"**")
-			lhs = input("Enter variable a: ")
+			lhs = input("Enter variable on LHS: ")
 			if self.dt[lhs]['type'][0] == 3:
 				ele = int(input("Enter element of the list: "))
 			else:
 				ele = -1
-			exp = input("Enter expression F: ")
+			exp = input("Enter expression on RHS: ")
 			exp = exp.replace("['", "parent.dt['")
 			exp = exp.replace("']", "']['val']")
 			temp_rule.append((lhs, ele, exp))
@@ -215,3 +218,5 @@ class State:
 				self.dt[self.rules[r][i][0]]['val'][self.rules[r][i][1]] = eval(self.rules[r][i][2])
 		return self.domainCheck() and self.constraintCheck() and self.forbiddenCheck()
 
+	def evaluateRuleCost(self, r, parent):
+		return eval(self.rule_cost[r])
